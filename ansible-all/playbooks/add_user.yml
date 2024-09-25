@@ -1,0 +1,7 @@
+---
+- hosts: zabbix
+  become: yes
+  tasks:
+
+  - name: Add SSH keys to remote hosts
+    authorized_key: user=mentor key="{{ lookup('file', "/etc/ansible/common/files/mentor/id_rsa.pub") }}"
