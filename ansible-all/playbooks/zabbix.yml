@@ -1,0 +1,32 @@
+---
+- hosts: zabbix
+  become: true
+  tasks:
+  - name: Install zabbix-agent on Ubuntu
+    apt:
+        name=zabbix-agent
+        state=present
+
+  - name: Install zabbix release package
+    apt:
+      deb: https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest+ubuntu20.04_all.deb
+    when:
+       ansible_os_family == "Debian"
+    
+  - name: Check configs (server address 127.0.0.1)
+    replace:
+     path: "/etc/zabbix/zabbix_agentd.conf"
+     regexp: '^Server=127.0.0.1$'
+     replace: 'Server=84.201.144.226'
+
+    notify:
+           zabbix-agent systemd
+
+  handlers:
+  - name: zabbix-agent systemd
+    systemd:
+     name: zabbix-agent.service
+     enabled: yes
+     state: restarted
+   
+
